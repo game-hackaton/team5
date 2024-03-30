@@ -6,6 +6,7 @@ const startButton = document.getElementsByClassName("startButton")[0];
 let game = null;
 let currentCells = {};
 
+
 function handleApiErrors(result) {
     if (!result.ok) {
         alert(`API returned ${result.status} ${result.statusText}. See details in Dev Tools Console`);
@@ -15,7 +16,8 @@ function handleApiErrors(result) {
 }
 
 async function startGame() {
-    game = await fetch("/api/games", { method: "POST" })
+    let size = document.querySelector('input[name="size"]:checked').value;
+    game = await fetch("/api/games?size="+size, { method: "POST" })
         .then(handleApiErrors);
     window.history.replaceState(game.id, "The Game", "/" + game.id);
     renderField(game);
