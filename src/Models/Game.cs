@@ -9,7 +9,7 @@ public class Game
 {
     public Cell[,] Cells;
     public bool isFinished = false;
-    
+    public int score = 0;
 
     public Game(int size = 4)
     {
@@ -136,6 +136,7 @@ public class Game
                 if (fragment[i].value == fragment[i+1].value)
                 {
                     newHeight.Add(new Cell(value: 2 * fragment[i].value));
+                    score += fragment[i].value * 2;
                     i++;
                 }
                 else

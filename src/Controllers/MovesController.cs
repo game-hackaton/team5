@@ -29,6 +29,6 @@ public class MovesController : Controller
         };
         var game = _repository.Get(gameId);
         game.Move(dir);
-        return Ok(new GameDto(game.GetCells(), true, false, game.Cells.GetLength(1), game.Cells.GetLength(0), gameId, game.isFinished, 0));
+        return Ok(new GameDto(game.GetCells(), true, false, game.Cells.GetLength(1), game.Cells.GetLength(0), gameId, game.isFinished, game.score));
     }
 }
