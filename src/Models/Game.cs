@@ -11,7 +11,7 @@ public class Game
         Cells = new int[3, 3];
     }
     
-    public void Move(int keyPressed)
+    public void Move(Direction direction)
     {
         
     }

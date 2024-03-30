@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Mvc;
 using thegame.Models;
 using thegame.Services;
@@ -7,22 +8,23 @@ namespace thegame.Controllers;
 [Route("api/games")]
 public class GamesController : Controller
 {
-    public static Game game;
-    public GamesController()
+    private readonly GamesRepository _repository;
+
+    public GamesController(GamesRepository repository)
     {
-        
+        _repository = repository;
     }
     
     [HttpPost]
     public IActionResult Start()
     {
-        game = new Game();
-        return Ok(game.ToDTO());
+        _repository.Add(Guid.Empty);
+        return Ok(_repository.Get(Guid.Empty).ToDTO());
     }
     
     [HttpPost("{gameId}")]
     public IActionResult Index([FromRoute] int gameId)
     {
-        return Ok(game.ToDTO());
+        return Ok(_repository.Get(Guid.Empty).ToDTO());
     }
 }

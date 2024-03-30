@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using thegame.Services;
 
 var builder = WebApplication.CreateBuilder();
+
+builder.Services.AddSingleton<GamesRepository>();
 
 builder.Services.AddMvc();
 
