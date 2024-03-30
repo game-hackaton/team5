@@ -27,7 +27,8 @@ public class MovesController : Controller
             40 => Direction.Down,
             _ => throw new Exception("Wrong key code")
         };
-        _repository.Get(gameId).Move(dir);
-        return Ok(_repository.Get(gameId).ToDTO());
+        var game = _repository.Get(gameId);
+        game.Move(dir);
+        return Ok(new GameDto(game.GetCells(), true, false, game.Cells.GetLength(1), game.Cells.GetLength(0), gameId, false, 0));
     }
 }
