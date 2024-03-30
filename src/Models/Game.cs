@@ -13,8 +13,12 @@ public class Game
     public Game()
     {
         Cells = new Cell[4, 4];
-        Cells[0, 0] = new Cell(cellId, 2);
-        Cells[1, 0] = new Cell(cellId+1, 2);
+        Cells[0, 0] = new Cell(1, 2);
+        Cells[1, 0] = new Cell(2, 2);
+        Cells[1, 1] = new Cell(3, 4);
+        Cells[1, 2] = new Cell(4, 4);
+        Cells[2, 2] = new Cell(5, 8);
+        Cells[3, 3] = new Cell(6, 2);
     }
 
     public void Move(Direction direction)
@@ -84,33 +88,6 @@ public class Game
         }
     }
 
-    private void MoveRight()
-    {
-        for (var x = Cells.Length; x > 0; x--)
-        {
-            for (var y = 0; y < Cells.Length; y++)
-            {
-                if (Cells[y, x] == null)
-                    continue;
-                while (x != Cells.Length)
-                {
-                    if (IsEmptyCell(x, y - 1))
-                    {
-                        Cells[y - 1, x] = Cells[y, x];
-                        Cells[y, x] = null;
-                        continue;
-                    }
-
-                    if (!IsCanMergeCells(Cells[y - 1, x], Cells[y, x])) continue;
-                    
-                    Cells[y - 1, x] = Cells[y - 1, x] with { value = Cells[y - 1, x].value + Cells[y, x].value };
-                    Cells[y, x] = null;
-                    x++;
-                }
-            }
-        }
-    }
-
     private void MoveDown()
     {
         //var y = Cells.GetLength(0);
@@ -153,10 +130,76 @@ public class Game
         
         //throw new System.NotImplementedException();
     }
+    
+     private void MoveRight()
+    {
+        for (var y = 0; y < Cells.GetLength(0); y++)
+        {
+
+            for (var x = Cells.GetLength(1) - 1; x >= 0; x--)
+            {
+                if (Cells[y, x] == null)
+                    continue;
+
+                var currx = x;
+                while (currx != Cells.GetLength(1) - 1)
+                {
+                    if (IsEmptyCell(currx + 1, y))
+                    {
+                        Cells[y, currx + 1] = Cells[y, currx];
+                        Cells[y, currx] = null;
+                        currx++;
+                        continue;
+                    }
+
+                    if (!IsCanMergeCells(Cells[y, currx + 1], Cells[y, currx]))
+                    {
+                        currx++;
+                        continue;
+                    }
+
+                    Cells[y, currx + 1] = Cells[y, currx + 1] with
+                    {
+                        value = Cells[y, currx + 1].value + Cells[y, currx].value
+                    };
+                    Cells[y, currx] = null;
+                    currx++;
+                }
+            }
+        }
+    }
 
     private void MoveLeft()
     {
-        throw new System.NotImplementedException();
+        for (var y = 0; y < Cells.GetLength(0); y++)
+        {
+            for (var x = 0; x <= Cells.GetLength(1) - 1; x++)
+            {
+                if (Cells[y, x] == null)
+                    continue;
+
+                var currx = x;
+                while (currx != 0)
+                {
+                    if (IsEmptyCell(currx - 1, y))
+                    {
+                        Cells[y, currx - 1] = Cells[y, currx];
+                        Cells[y, currx] = null;
+                        currx--;
+                        continue;
+                    }
+
+                    if (!IsCanMergeCells(Cells[y, currx - 1], Cells[y, currx])) continue;
+
+                    Cells[y, currx - 1] = Cells[y, currx - 1] with
+                    {
+                        value = Cells[y, currx - 1].value + Cells[y, currx].value
+                    };
+                    Cells[y, currx] = null;
+                    currx--;
+                }
+            }
+        }
     }
 
     public GameDto ToDTO()
