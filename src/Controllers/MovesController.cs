@@ -28,6 +28,6 @@ public class MovesController : Controller
             _ => throw new Exception("Wrong key code")
         };
         _repository.Get(gameId).Move(dir);
-        return Ok();
+        return Ok(_repository.Get(gameId).ToDTO());
     }
 }

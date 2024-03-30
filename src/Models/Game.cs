@@ -47,28 +47,37 @@ public class Game
 
     private void MoveUp()
     {
-        for (var y = 1; y < Cells.Length; y++)
+        var list = new List<Cell>();
+
+        for (var x = 0; x < Cells.GetLength(1); x++)
         {
-            for (var x = 0; x < Cells.Length; x++)
+            for (var y = 0; y < Cells.GetLength(0); y++)
             {
-                if (Cells[y, x] == null)
-                    continue;
-                while (y != 0)
+                if (!(Cells[y, x] is null))
                 {
-                    if (IsEmptyCell(x, y - 1))
-                    {
-                        Cells[y - 1, x] = Cells[y, x];
-                        Cells[y, x] = null;
-                        continue;
-                    }
-
-                    if (!IsCanMergeCells(Cells[y - 1, x], Cells[y, x])) continue;
-                    
-                    Cells[y - 1, x] = Cells[y - 1, x] with { value = Cells[y - 1, x].value + Cells[y, x].value };
+                    list.Add(Cells[y, x] with { });
                     Cells[y, x] = null;
-
-                    y--;
                 }
+            }
+
+            var ans = new List<Cell>();
+            
+            if (list.Count == 1)
+                ans = list;
+            
+            for (var i = 0; i < list.Count-1; i++)
+            {
+                if (list[i].value == list[i + 1].value)
+                {
+                    ans.Add(list[i] with{value = list[i].value + list[i + 1].value});
+                    i++;
+                }
+            }
+
+            for (var yy = 0; yy < ans.Count; yy++)
+            {
+                Cells[yy, x] = ans[0] with{};
+                ans.RemoveAt(0);
             }
         }
     }
@@ -102,14 +111,50 @@ public class Game
 
     private void MoveDown()
     {
-        throw new System.NotImplementedException();
+        //var y = Cells.GetLength(0);
+        //var x = Cells.GetLength(1);
+
+        var list = new List<Cell>();
+
+        for (var x = 0; x < Cells.GetLength(1); x++)
+        {
+            for (var y = Cells.GetLength(0)-1; y >= 0; y--)
+            {
+                if (!(Cells[y, x] is null))
+                {
+                    list.Add(Cells[y, x] with { });
+                    Cells[y, x] = null;
+                }
+            }
+
+            var ans = new List<Cell>();
+            
+            if (list.Count == 1)
+                ans = list;
+            
+            for (var i = 0; i < list.Count-1; i++)
+            {
+                if (list[i].value == list[i + 1].value)
+                {
+                    ans.Add(list[i] with{value = list[i].value + list[i + 1].value});
+                    i++;
+                }
+            }
+
+            for (var yy = Cells.GetLength(1) - 1; yy > Cells.GetLength(1) - ans.Count - 1; yy--)
+            {
+                Cells[yy, x] = ans[0] with{};
+                ans.RemoveAt(0);
+            }
+        }
+        
+        //throw new System.NotImplementedException();
     }
 
     private void MoveLeft()
     {
         throw new System.NotImplementedException();
     }
-
 
     public GameDto ToDTO()
     {
