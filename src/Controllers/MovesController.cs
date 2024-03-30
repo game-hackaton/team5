@@ -19,7 +19,15 @@ public class MovesController : Controller
     public IActionResult Moves(Guid gameId, [FromBody]UserInputDto userInput)
     {
         var keyIndex = userInput.KeyPressed;
-        _repository.Get(Guid.Empty).Move(Direction.Down);
-        return Ok(1);
+        var dir = keyIndex switch
+        {
+            37 => Direction.Left,
+            38 => Direction.Up,
+            39 => Direction.Right,
+            40 => Direction.Down,
+            _ => throw new Exception("Wrong key code")
+        };
+        _repository.Get(gameId).Move(dir);
+        return Ok();
     }
 }

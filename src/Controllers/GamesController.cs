@@ -18,13 +18,14 @@ public class GamesController : Controller
     [HttpPost]
     public IActionResult Start()
     {
-        _repository.Add(Guid.Empty);
-        return Ok(_repository.Get(Guid.Empty).ToDTO());
+        var gameId = Guid.Empty;//Guid.NewGuid();
+        _repository.Add(gameId);
+        return Ok(_repository.Get(gameId).ToDTO());
     }
     
     [HttpPost("{gameId}")]
-    public IActionResult Index([FromRoute] int gameId)
+    public IActionResult Index([FromRoute] Guid gameId)
     {
-        return Ok(_repository.Get(Guid.Empty).ToDTO());
+        return Ok(_repository.Get(gameId).ToDTO());
     }
 }
