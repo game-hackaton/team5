@@ -14,6 +14,7 @@ public class Game
     {
         Cells = new Cell[4, 4];
         Cells[0, 0] = new Cell(cellId, 2);
+        Cells[1, 0] = new Cell(cellId+1, 2);
     }
 
     public void Move(Direction direction)
@@ -79,12 +80,13 @@ public class Game
                 Cells[yy, x] = ans[0] with{};
                 ans.RemoveAt(0);
             }
+            list.Clear();
         }
     }
 
     private void MoveRight()
     {
-        for (var x = Cells.Length; x >0; x--)
+        for (var x = Cells.Length; x > 0; x--)
         {
             for (var y = 0; y < Cells.Length; y++)
             {
@@ -146,6 +148,7 @@ public class Game
                 Cells[yy, x] = ans[0] with{};
                 ans.RemoveAt(0);
             }
+            list.Clear();
         }
         
         //throw new System.NotImplementedException();
