@@ -1,4 +1,6 @@
-﻿using System.Runtime.Intrinsics.X86;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.Intrinsics.X86;
 using thegame.Services;
 
 namespace thegame.Models;
@@ -109,6 +111,24 @@ public class Game
 
     public GameDto ToDTO()
     {
+        return new GameDto(GetCells(), true, false, Cells.GetLength(0), Cells.GetLength(0), Guid.Empty, false, 0);
         return TestData.AGameDto(new VectorDto { X = 1, Y = 1 });
+    }
+
+    public CellDto[] GetCells()
+    {
+        var res = new List<CellDto>();
+        Cell cell;
+        for (var i = 0; i < Cells.GetLength(0); i++)
+        for (var j = 0; j < Cells.GetLength(1); j++)
+        {
+            if (!(Cells[i,j] is null) && Cells[i, j].id != 0)
+            {
+                cell = Cells[i, j];
+                res.Add(new CellDto(cell.id.ToString(), new VectorDto { X = j, Y = i }, "", cell.id.ToString(), 20));
+            }
+        }
+
+        return res.ToArray();
     }
 }
