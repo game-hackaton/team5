@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using thegame.Models;
 
@@ -6,15 +7,15 @@ namespace thegame.Services;
 
 public class GamesRepository
 {
-    private Dictionary<Guid, Game> dict;
+    private ConcurrentDictionary<Guid, Game> dict;
 
     public GamesRepository()
     {
-        dict = new Dictionary<Guid, Game>();
+        dict = new ConcurrentDictionary<Guid, Game>();
     }
-    public void Add(Guid id)
+    public void Add(Guid id, Game game)
     {
-        dict.Add(id, new Game());
+        dict.TryAdd(id, game);
     }
 
     public Game Get(Guid id)
