@@ -77,6 +77,10 @@ public class Game
                     ans.Add(list[i] with{value = list[i].value + list[i + 1].value});
                     i++;
                 }
+                else
+                {
+                    ans.Add(list[i] with{});
+                }
             }
 
             for (var yy = 0; yy < ans.Count; yy++)
@@ -117,6 +121,10 @@ public class Game
                 {
                     ans.Add(list[i] with{value = list[i].value + list[i + 1].value});
                     i++;
+                }
+                else
+                {
+                    ans.Add(list[i] with{});
                 }
             }
 
