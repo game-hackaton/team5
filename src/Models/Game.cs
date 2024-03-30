@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Intrinsics.X86;
+using System.Threading;
 using thegame.Services;
 
 namespace thegame.Models;
@@ -10,10 +12,16 @@ public class Game
     public Cell[,] Cells;
     public int cellId = 1;
 
+    private static int maxId = 0;
+
     public Game()
     {
         Cells = new Cell[4, 4];
-        Cells[0, 0] = new Cell(cellId, 2);
+        Cells[0, 0] = new Cell(++maxId, 2);
+        Cells[1, 0] = new Cell(++maxId, 2);
+        Cells[1, 1] = new Cell(++maxId, 2);
+        Cells[1, 2] = new Cell(++maxId, 2);
+        Cells[1, 3] = new Cell(++maxId, 2);
     }
 
     public void Move(Direction direction)
@@ -21,16 +29,16 @@ public class Game
         switch (direction)
         {
             case Direction.Up:
-                MoveUp();
+                MoveVertical(false);
                 break;
             case Direction.Right:
-                MoveRight();
+                MoveHorizontal(true);
                 break;
             case Direction.Down:
-                MoveDown();
+                MoveVertical(true);
                 break;
             case Direction.Left:
-                MoveLeft();
+                MoveHorizontal(false);
                 break;
         }
     }
@@ -45,76 +53,94 @@ public class Game
         return cell1.value == cell2.value;
     }
 
-    private void MoveUp()
+    private void MoveHorizontal(bool isReversed)
     {
-        for (var y = 1; y < Cells.Length; y++)
+        var width = Cells.GetLength(0);
+        var height = Cells.GetLength(1);
+        var collumns = Enumerable
+            .Range(0, width)
+            .Select(x => Enumerable
+                .Range(0, height)
+                .Where(y => Cells[x, y] != null)
+                .Select(y => Cells[x, y])
+                .ToArray())
+            .ToArray();
+        collumns = Compress(collumns, isReversed);
+        Cells = new Cell[4, 4];
+        for (int x = 0; x < width; x++)
         {
-            for (var x = 0; x < Cells.Length; x++)
+            for (int y = 0; y < collumns[x].Length; y++)
             {
-                if (Cells[y, x] == null)
-                    continue;
-                while (y != 0)
-                {
-                    if (IsEmptyCell(x, y - 1))
-                    {
-                        Cells[y - 1, x] = Cells[y, x];
-                        Cells[y, x] = null;
-                        continue;
-                    }
-
-                    if (!IsCanMergeCells(Cells[y - 1, x], Cells[y, x])) continue;
-                    
-                    Cells[y - 1, x] = Cells[y - 1, x] with { value = Cells[y - 1, x].value + Cells[y, x].value };
-                    Cells[y, x] = null;
-
-                    y--;
-                }
+                if (isReversed)
+                    Cells[x, height - y - 1] = collumns[x][collumns[x].Length - y - 1];
+                else
+                    Cells[x, y] = collumns[x][y];
+            }
+        }
+    }
+    
+    private void MoveVertical(bool isReversed)
+    {
+        var width = Cells.GetLength(0);
+        var height = Cells.GetLength(1);
+        var rows = Enumerable
+            .Range(0, height)
+            .Select(y => Enumerable
+                .Range(0, width)
+                .Where(x => Cells[x, y] != null)
+                .Select(x => Cells[x, y])
+                .ToArray())
+            .ToArray();
+        rows = Compress(rows, !isReversed);
+        Cells = new Cell[4, 4];
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < rows[y].Length; x++)
+            {
+                if (isReversed)
+                    Cells[width - x - 1, y] = rows[y][rows[y].Length - x - 1];
+                else
+                    Cells[x, y] = rows[y][x];
             }
         }
     }
 
-    private void MoveRight()
+    private Cell[][] Compress(Cell[][] fragments, bool isReversed)
     {
-        for (var x = Cells.Length; x >0; x--)
+        var result = new List<Cell[]>();
+        foreach (var _fragment in fragments)
         {
-            for (var y = 0; y < Cells.Length; y++)
+            var newHeight = new List<Cell>();
+            var fragment = _fragment;
+            if (isReversed)
+                fragment = fragment.Reverse().ToArray();
+            for (int i = 0; i < fragment.Length; i++)
             {
-                if (Cells[y, x] == null)
-                    continue;
-                while (x != Cells.Length)
+                if (i+1 >= fragment.Length)
                 {
-                    if (IsEmptyCell(x, y - 1))
-                    {
-                        Cells[y - 1, x] = Cells[y, x];
-                        Cells[y, x] = null;
-                        continue;
-                    }
-
-                    if (!IsCanMergeCells(Cells[y - 1, x], Cells[y, x])) continue;
-                    
-                    Cells[y - 1, x] = Cells[y - 1, x] with { value = Cells[y - 1, x].value + Cells[y, x].value };
-                    Cells[y, x] = null;
-                    x++;
+                    newHeight.Add(fragment[i]);
+                    break;
                 }
+                if (fragment[i].value == fragment[i+1].value)
+                {
+                    newHeight.Add(new Cell(id: ++maxId, value: 2 * fragment[i].value));
+                    i++;
+                }
+                else
+                    newHeight.Add(fragment[i]);
             }
+            if (isReversed)
+                newHeight.Reverse();
+            result.Add(newHeight.ToArray());
         }
-    }
 
-    private void MoveDown()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    private void MoveLeft()
-    {
-        throw new System.NotImplementedException();
+        return result.ToArray();
     }
 
 
     public GameDto ToDTO()
     {
         return new GameDto(GetCells(), true, false, Cells.GetLength(0), Cells.GetLength(0), Guid.Empty, false, 0);
-        return TestData.AGameDto(new VectorDto { X = 1, Y = 1 });
     }
 
     public CellDto[] GetCells()
