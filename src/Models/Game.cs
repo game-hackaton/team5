@@ -8,10 +8,12 @@ namespace thegame.Models;
 public class Game
 {
     public Cell[,] Cells;
+    public int cellId = 1;
 
     public Game()
     {
         Cells = new Cell[4, 4];
+        Cells[0, 0] = new Cell(cellId, 2);
     }
 
     public void Move(Direction direction)
@@ -125,7 +127,7 @@ public class Game
             if (!(Cells[i,j] is null) && Cells[i, j].id != 0)
             {
                 cell = Cells[i, j];
-                res.Add(new CellDto(cell.id.ToString(), new VectorDto { X = j, Y = i }, "", cell.id.ToString(), 20));
+                res.Add(new CellDto(cell.id.ToString(), new VectorDto { X = j, Y = i }, "color1", cell.value.ToString(), 20));
             }
         }
 
