@@ -7,9 +7,22 @@ namespace thegame.Controllers;
 [Route("api/games")]
 public class GamesController : Controller
 {
-    [HttpPost]
-    public IActionResult Index()
+    public static Game game;
+    public GamesController()
     {
-        return Ok(TestData.AGameDto(new VectorDto {X = 1, Y = 1}));
+        
+    }
+    
+    [HttpPost]
+    public IActionResult Start()
+    {
+        game = new Game();
+        return Ok(game.ToDTO());
+    }
+    
+    [HttpPost("{gameId}")]
+    public IActionResult Index([FromRoute] int gameId)
+    {
+        return Ok(game.ToDTO());
     }
 }
