@@ -153,7 +153,7 @@ public class Game
             if (!(Cells[i,j] is null) && Cells[i, j].id != 0)
             {
                 cell = Cells[i, j];
-                res.Add(new CellDto(cell.id.ToString(), new VectorDto { X = j, Y = i }, "color1", cell.value.ToString(), 20));
+                res.Add(new CellDto(cell.id.ToString(), new VectorDto { X = j, Y = i }, $"tile-{cell.value}", cell.value.ToString(), 20));
             }
         }
 
