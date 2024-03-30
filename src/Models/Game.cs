@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Intrinsics.X86;
-using System.Threading;
-using thegame.Services;
+
 
 namespace thegame.Models;
 
 public class Game
 {
     public Cell[,] Cells;
-    public int cellId = 1;
+    public bool isFinished = false;
 
     private static int maxId = 0;
 
@@ -41,18 +39,34 @@ public class Game
                 MoveHorizontal(false);
                 break;
         }
+        
+        GenerateNewCell();
     }
-
-    private bool IsEmptyCell(int x, int y)
+    
+    private void GenerateNewCell()
     {
-        return Cells[y, x] == null;
-    }
+        var random = new Random();
+        var value = random.NextDouble() < 0.8 ? 2 : 4;
+        var emptyCells = new List<int[]>();
+        for (var x =0; x<Cells.GetLength(1);x++)
+        {
+            for (var y = 0; y<Cells.GetLength(0);y++)
+            {
+                if (Cells[y,x]==null)
+                    emptyCells.Add(new int[]{y,x});
+            }
+        }
 
-    private bool IsCanMergeCells(Cell cell1, Cell cell2)
-    {
-        return cell1.value == cell2.value;
-    }
+        if (emptyCells.Count == 0)
+        {
+            isFinished = true;
+            return;
+        }
+        var elemToUpdate = emptyCells[random.Next(emptyCells.Count - 1)];
+        Cells[elemToUpdate[0], elemToUpdate[1]] = new Cell(++maxId, value);
 
+    }
+    
     private void MoveHorizontal(bool isReversed)
     {
         var width = Cells.GetLength(0);
@@ -140,7 +154,7 @@ public class Game
 
     public GameDto ToDTO()
     {
-        return new GameDto(GetCells(), true, false, Cells.GetLength(0), Cells.GetLength(0), Guid.Empty, false, 0);
+        return new GameDto(GetCells(), true, false, Cells.GetLength(0), Cells.GetLength(0), Guid.Empty, isFinished, 0);
     }
 
     public CellDto[] GetCells()
