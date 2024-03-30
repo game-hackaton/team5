@@ -21,13 +21,13 @@ public class GamesController : Controller
         var gameId = Guid.NewGuid();//Guid.NewGuid();
         _repository.Add(gameId, new Game());
         var game = _repository.Get(gameId);
-        return Ok(new GameDto(game.GetCells(), true, false, game.Cells.GetLength(1), game.Cells.GetLength(0), gameId, false, 0));
+        return Ok(new GameDto(game.GetCells(), true, false, game.Cells.GetLength(1), game.Cells.GetLength(0), gameId, game.isFinished, 0));
     }
     
     [HttpPost("{gameId}")]
     public IActionResult Index([FromRoute] Guid gameId)
     {
         var game = _repository.Get(gameId);
-        return Ok(new GameDto(game.GetCells(), true, false, game.Cells.GetLength(1), game.Cells.GetLength(0), gameId, false, 0));
+        return Ok(new GameDto(game.GetCells(), true, false, game.Cells.GetLength(1), game.Cells.GetLength(0), gameId, game.isFinished, 0));
     }
 }
