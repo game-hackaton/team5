@@ -9,17 +9,15 @@ public class Game
 {
     public Cell[,] Cells;
     public bool isFinished = false;
+    
 
-    private static int maxId = 0;
-
-    public Game()
+    public Game(int size = 4)
     {
-        Cells = new Cell[4, 4];
-        Cells[0, 0] = new Cell(++maxId, 2);
-        Cells[1, 0] = new Cell(++maxId, 2);
-        Cells[1, 1] = new Cell(++maxId, 2);
-        Cells[1, 2] = new Cell(++maxId, 2);
-        Cells[1, 3] = new Cell(++maxId, 2);
+        Cells = new Cell[size, size];
+        for (int i = 0; i < 4; i++)
+        {
+            GenerateNewCell();
+        }
     }
 
     public void Move(Direction direction)
@@ -63,7 +61,7 @@ public class Game
             return;
         }
         var elemToUpdate = emptyCells[random.Next(emptyCells.Count - 1)];
-        Cells[elemToUpdate[0], elemToUpdate[1]] = new Cell(++maxId, value);
+        Cells[elemToUpdate[0], elemToUpdate[1]] = new Cell(value);
 
     }
     
@@ -80,7 +78,7 @@ public class Game
                 .ToArray())
             .ToArray();
         collumns = Compress(collumns, isReversed);
-        Cells = new Cell[4, 4];
+        Cells = new Cell[width, height];
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < collumns[x].Length; y++)
@@ -106,7 +104,7 @@ public class Game
                 .ToArray())
             .ToArray();
         rows = Compress(rows, !isReversed);
-        Cells = new Cell[4, 4];
+        Cells = new Cell[width, height];
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < rows[y].Length; x++)
@@ -137,7 +135,7 @@ public class Game
                 }
                 if (fragment[i].value == fragment[i+1].value)
                 {
-                    newHeight.Add(new Cell(id: ++maxId, value: 2 * fragment[i].value));
+                    newHeight.Add(new Cell(value: 2 * fragment[i].value));
                     i++;
                 }
                 else
@@ -167,7 +165,11 @@ public class Game
             if (!(Cells[i,j] is null) && Cells[i, j].id != 0)
             {
                 cell = Cells[i, j];
-                res.Add(new CellDto(cell.id.ToString(), new VectorDto { X = j, Y = i }, $"tile-{cell.value}", cell.value.ToString(), 20));
+                res.Add(
+                    new CellDto(cell.id.ToString(), 
+                    new VectorDto { X = j, Y = i }, 
+                    $"tile-{cell.value}", 
+                    cell.value.ToString(), 20));
             }
         }
 

@@ -16,10 +16,10 @@ public class GamesController : Controller
     }
     
     [HttpPost]
-    public IActionResult Start()
+    public IActionResult Start([FromQuery] int size)
     {
         var gameId = Guid.NewGuid();//Guid.NewGuid();
-        _repository.Add(gameId, new Game());
+        _repository.Add(gameId, new Game(size));
         var game = _repository.Get(gameId);
         return Ok(new GameDto(game.GetCells(), true, false, game.Cells.GetLength(1), game.Cells.GetLength(0), gameId, false, 0));
     }
